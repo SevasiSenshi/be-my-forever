@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Will You Be My Forever?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #ffdee9; /* Light baby pink */
+      font-family: 'Indie Flower', cursive;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      flex-direction: column;
+      text-align: center;
+      overflow: hidden;
+    }
+    .question {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+    .button-box {
+      display: flex;
+      gap: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1.2rem;
+      border: 2px solid black;
+      background-color: white;
+      cursor: pointer;
+    }
+    .gif {
+      width: 150px;
+      margin-top: 20px;
+    }
+    .confetti {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+  <audio autoplay loop>
+    <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="content">
+    <div class="question" id="question">Will you be my forever?</div>
+    <div class="button-box">
+      <button onclick="handleYes()">Yes</button>
+      <button onclick="handleNo()">No</button>
+    </div>
+    <div id="animation"></div>
+  </div>
+
+  <script>
+    function handleYes() {
+      document.body.innerHTML = `
+        <div class="question">Yaaay!! 💖</div>
+        <img src="https://media.giphy.com/media/l41lI4bYmcsPJX9Go/giphy.gif" class="gif" alt="Happy Doodoo"/>
+        <canvas class="confetti"></canvas>
+        <audio autoplay>
+          <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" type="audio/mpeg">
+        </audio>
+      `;
+      startConfetti();
+    }
+
+    function handleNo() {
+      const anim = document.getElementById('animation');
+      anim.innerHTML = `<img src="https://media.giphy.com/media/3o6ZtaO9BZHcOjmErm/giphy.gif" class="gif" alt="Sad Doodoo"/>`;
+      setTimeout(() => {
+        anim.innerHTML = '';
+        document.getElementById('question').innerText = 'Will you be my forever?';
+      }, 2000);
+    }
+
+    function startConfetti() {
+      const canvas = document.querySelector(".confetti");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      let confettis = [];
+      for (let i = 0; i < 200; i++) {
+        confettis.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 6 + 4,
+          d: Math.random() * 10 + 10,
+          color: `hsl(${Math.random() * 360}, 100%, 70%)`,
+          tilt: Math.random() * 10 - 10,
+          tiltAngle: 0
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        confettis.forEach(c => {
+          ctx.beginPath();
+          ctx.lineWidth = c.r;
+          ctx.strokeStyle = c.color;
+          ctx.moveTo(c.x + c.tilt + c.r / 2, c.y);
+          ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 2);
+          ctx.stroke();
+        });
+        update();
+      }
+
+      function update() {
+        confettis.forEach(c => {
+          c.y += Math.cos(c.d) + 1 + c.r / 2;
+          c.tiltAngle += 0.1;
+          c.tilt = Math.sin(c.tiltAngle - i) * 15;
+
+          if (c.y > canvas.height) {
+            c.y = -10;
+            c.x = Math.random() * canvas.width;
+          }
+        });
+      }
+      (function animate() {
+        draw();
+        requestAnimationFrame(animate);
+      })();
+    }
+  </script>
+</body>
+</html>
